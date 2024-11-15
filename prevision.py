@@ -8,7 +8,7 @@ Original file is located at
 
 ## Biblioteca
 """
-
+# pip install pandas scikit-learn matplotlib joblib
 '''
   Importação das bibliotecas
 '''
@@ -26,7 +26,7 @@ import joblib
 '''
   Importação do DataSet
 '''
-data = pd.read_csv('/content/drive/MyDrive/colab/car_regressor/car_data.csv')
+data = pd.read_csv('./car_regressor/data/car_data.csv')
 '''
   Conversão em DataFrame
 '''
@@ -116,14 +116,14 @@ for name, model in models.items():
     '''
       Apresentação gráfica da regressão de ambos os modelos
     '''
-    plt.figure(figsize=(10, 6))
-    plt.plot(range(y_pred.shape[0]), y_pred, 'r--', label='Preço previsto')
-    plt.plot(range(y_teste.shape[0]), y_teste, 'g--', label='Preço real')
-    plt.legend()
-    plt.xlabel('Índice')
-    plt.ylabel('Preços')
-    plt.title(f'{name} - Comparação entre Preço Previsto e Real')
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(range(y_pred.shape[0]), y_pred, 'r--', label='Preço previsto')
+    # plt.plot(range(y_teste.shape[0]), y_teste, 'g--', label='Preço real')
+    # plt.legend()
+    # plt.xlabel('Índice')
+    # plt.ylabel('Preços')
+    # plt.title(f'{name} - Comparação entre Preço Previsto e Real')
+    # plt.show()
     '''
       Verificar o modelo com o melhor resultado
     '''
@@ -143,47 +143,47 @@ for name, metrics in results.items():
 '''
 if best_model is not None:
     print(f"\nO melhor modelo é: {best_model_name} com R2 Score: {best_r2_score}")
-    joblib.dump(best_model, '/content/drive/MyDrive/colab/car_regressor/best_model_car_regressor.pkl')
+    joblib.dump(best_model, './car_regressor/model/best_model_car_regressor.pkl')
 
 """##Testando a previsão do melhor modelo"""
 
 '''
   Carregamento do melhor modelo salvo
 '''
-modelo_car_regressor = joblib.load('/content/drive/MyDrive/colab/car_regressor/best_model_car_regressor.pkl')
+# modelo_car_regressor = joblib.load('./car_regressor/model/best_model_car_regressor.pkl')
 '''
   Inserção dos dados de input de teste...
 '''
-ano = int(input("Digite o ano do carro: "))
-preco_atual = float(input("Digite o preço atual do carro: "))
-kms_rodados = int(input("Digite os quilômetros rodados: "))
-n_donos = int(input("Digite o número de donos anteriores: "))
-tipo_transmissao_manual = int(input("Transmissão manual (1 para sim, 0 para não): "))
-tipo_vendedor_revendedor = int(input("Vendedor revendedor (1 para sim, 0 para não): "))
-combustivel_gas_natural = int(input("Combustível gás natural (1 para sim, 0 para não): "))
-combustivel_gasolina = int(input("Combustível gasolina (1 para sim, 0 para não): "))
+# ano = int(input("Digite o ano do carro: "))
+# preco_atual = float(input("Digite o preço atual do carro: "))
+# kms_rodados = int(input("Digite os quilômetros rodados: "))
+# n_donos = int(input("Digite o número de donos anteriores: "))
+# tipo_transmissao_manual = int(input("Transmissão manual (1 para sim, 0 para não): "))
+# tipo_vendedor_revendedor = int(input("Vendedor revendedor (1 para sim, 0 para não): "))
+# combustivel_gas_natural = int(input("Combustível gás natural (1 para sim, 0 para não): "))
+# combustivel_gasolina = int(input("Combustível gasolina (1 para sim, 0 para não): "))
 '''
   Criando um DataFrame com as respostas dos input
 '''
-dados = pd.DataFrame({
-    'ano': [ano],
-    'kms_rodados': [kms_rodados],
-    'n_donos': [n_donos],
-    'tipo_transmissao_Manual': [tipo_transmissao_manual],
-    'tipo_vendedor_Revendedor': [tipo_vendedor_revendedor],
-    'tipo_combustivel_GasNatural': [combustivel_gas_natural],
-    'tipo_combustivel_Gasolina': [combustivel_gasolina]
-})
+# dados = pd.DataFrame({
+#     'ano': [ano],
+#     'kms_rodados': [kms_rodados],
+#     'n_donos': [n_donos],
+#     'tipo_transmissao_Manual': [tipo_transmissao_manual],
+#     'tipo_vendedor_Revendedor': [tipo_vendedor_revendedor],
+#     'tipo_combustivel_GasNatural': [combustivel_gas_natural],
+#     'tipo_combustivel_Gasolina': [combustivel_gasolina]
+# })
 '''
   Realizar a previsão
 '''
-pct_preco_venda = modelo_car_regressor.predict(dados)[0]
+# pct_preco_venda = modelo_car_regressor.predict(dados)[0]
 '''
   Realizar o calculo do preço atual menos a porcentagem de desconto pela desvalorização do carro
 '''
-preco_venda = preco_atual * (1 + pct_preco_venda / 100)
+# preco_venda = preco_atual * (1 + pct_preco_venda / 100)
 '''
   Exibição de resultado
 '''
-print(f'A porcentagem prevista é: {pct_preco_venda:.2f}%')
-print(f'O preço previsto de venda do carro é: R${preco_venda:.2f}')
+# print(f'A porcentagem prevista é: {pct_preco_venda:.2f}%')
+# print(f'O preço previsto de venda do carro é: R${preco_venda:.2f}')
