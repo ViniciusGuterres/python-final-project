@@ -1,0 +1,6 @@
+ID,Model,R2 Score,MAE,MSE,RMSE,Saved_Model_Path
+1,Ridge Regression,0.7361873585065213,8.948375136703788,122.18823544606514,11.053878751192503,./car_regressor/model/1_Ridge_Regression.pkl
+2,Lasso Regression,0.7275066439684772,9.106891880319404,126.20882060760236,11.234269918762072,./car_regressor/model/2_Lasso_Regression.pkl
+3,Decision Tree Regressor,0.653126526392146,9.695978421687578,160.65893364036782,12.675130517685718,./car_regressor/model/3_Decision_Tree_Regressor.pkl
+4,Random Forest Regressor,0.7832220392028643,7.731282625644454,100.40351502281239,10.020155439054445,./car_regressor/model/4_Random_Forest_Regressor.pkl
+5,Gradient Boosting Regressor,0.8063215535123207,7.149255961942521,89.70467634262202,9.471255267525104,./car_regressor/model/5_Gradient_Boosting_Regressor.pkl
