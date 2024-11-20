@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Configurar Parâmetros{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h1 class="text-center mb-4">Configurar Parâmetros de Análise</h1>
+      <div class="card shadow">
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+            {{ parameter_form.as_p }}
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-primary">Confirmar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

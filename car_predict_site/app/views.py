@@ -3,7 +3,7 @@ import csv
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from .forms import UploadCSVForm
+from .forms import UploadCSVForm, MLParameterForm
 
 def index(request):
     if request.method == 'POST':
@@ -32,7 +32,7 @@ def index(request):
                     for chunk in csv_file.chunks():
                         f.write(chunk)
 
-                return redirect('dashboard')
+                return redirect('configure_parameters')
             except Exception as e:
                 return render(request, 'index.html', {'form': form, 'error': str(e)})
     else:
@@ -40,7 +40,19 @@ def index(request):
 
     return render(request, 'index.html', {'form': form})
 
-
 def dashboard(request):
     print('dashboard')
     return render(request, 'dashboard.html')
+
+def configure_parameters(request):
+    parameter_form = MLParameterForm()
+
+    if request.method == 'POST':  # Handle parameter submission
+        parameter_form = MLParameterForm(request.POST)
+        if parameter_form.is_valid():
+            parameters = parameter_form.cleaned_data
+            # Process parameters (e.g., save for analysis or redirect)
+            return redirect('dashboard')  # Redirect to the dashboard or another page
+
+    # Always render the form if it's not a POST request or if the form is invalid
+    return render(request, 'configure_parameters.html', {'parameter_form': parameter_form})
