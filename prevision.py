@@ -1,14 +1,15 @@
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+import pygal
+from pygal.style import Style
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import Ridge, Lasso
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-import matplotlib.pyplot as plt
-import joblib
-import seaborn as sns
+import os
 
-def train_test(data, 
+def ML_function(data, 
                params_Ridge, 
                params_Lasso, 
                params_DecisionTree, 
@@ -28,10 +29,10 @@ def train_test(data,
         Divisão dos atributos de treinamento e teste
     '''
     x = df[['ano', 'kms_rodados', 'n_donos', 'tipo_transmissao_Manual', 'tipo_vendedor_Revendedor', 'tipo_combustivel_GasNatural', 'tipo_combustivel_Gasolina']]
-    y = df[['pct_preco_venda']]
+    y = df['pct_preco_venda']  # Mudança para Series 1D
     x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size=0.2, random_state=42)
     '''
-        preparação dos modelos com os seu parâmetros
+        Preparação dos modelos com os seus parâmetros
     '''
     models = {
         "Ridge Regression": (Ridge(), params_Ridge),
@@ -41,7 +42,7 @@ def train_test(data,
         "Gradient Boosting Regressor": (GradientBoostingRegressor(), params_GradientBoosting)
     }
     '''
-        variavel para armazenas os dados dos treinamentos e uma variavel contador
+        Variável para armazenar os dados dos treinamentos e uma variável contador
     '''
     results = []
     model_id = 1
@@ -60,16 +61,17 @@ def train_test(data,
         '''
             Salvar cada modelo individualmente
         '''
-        model_path = f'./car_regressor/model/{name.replace(" ", "_")}_model_{model_id}.pkl'
+        model_path = f'./car_regressor/model/{model_id}_{name.replace(" ", "_")}.pkl'
         joblib.dump(best_model_found, model_path)
         '''
             Avaliação do modelo
         '''
         y_pred = best_model_found.predict(x_teste)
-        r2 = r2_score(y_teste, y_pred)
-        mae = mean_absolute_error(y_teste, y_pred)
-        mse = mean_squared_error(y_teste, y_pred)
-        rmse = mean_squared_error(y_teste, y_pred, squared=False)
+        y_pred_series = pd.Series(y_pred)  # Garantir que y_pred seja uma Series
+        r2 = r2_score(y_teste, y_pred_series)
+        mae = mean_absolute_error(y_teste, y_pred_series)
+        mse = mean_squared_error(y_teste, y_pred_series)
+        rmse = mse**0.5
         '''
             Armazenamento dos resultados
         '''
@@ -83,18 +85,16 @@ def train_test(data,
             'Saved_Model_Path': model_path
         })
         '''
-            Salvar o gráfico de comparação
+            Gráfico de comparação usando Pygal
         '''
-        plt.figure(figsize=(10, 6))
-        plt.plot(range(y_pred.shape[0]), y_pred, 'r--', label='Preço previsto')
-        plt.plot(range(y_teste.shape[0]), y_teste, 'g--', label='Preço real')
-        plt.legend()
-        plt.xlabel('Índice')
-        plt.ylabel('Preços')
-        plt.title(f'{name} - Comparação entre Preço Previsto e Real')
-        plt.savefig(r'C:\Users\luiga\Documents\python-final-project\car_regressor\img_train\{}_{}_comparacao_preco.png'.format(model_id,name.replace(" ", "_")))
+        comparison_chart = pygal.Line(style=Style(colors=['#FF5733', '#33FF57']))
+        comparison_chart.title = f'{name} - Comparação entre Preço Previsto e Real'
+        comparison_chart.x_labels = [str(i) for i in range(1, len(y_teste) + 1)]
+        comparison_chart.add('Preço Real', y_teste.tolist())
+        comparison_chart.add('Preço Previsto', y_pred_series.tolist())
+        comparison_chart.render_to_file(f'./car_regressor/img_train/{model_id}_{name.replace(" ", "_")}/{model_id}_{name.replace(" ", "_")}_comparacao_preco.svg')
         '''
-            Salvar o gráfico de importância
+            Gráfico de importância das características usando Pygal
         '''
         if hasattr(best_model_found, "feature_importances_"):
             importances = best_model_found.feature_importances_
@@ -102,19 +102,11 @@ def train_test(data,
             sorted_indices = importances.argsort()[::-1]
             sorted_importances = importances[sorted_indices]
             sorted_feature_names = feature_names[sorted_indices]
-            importances_df = pd.DataFrame({'Feature': sorted_feature_names, 'Importance': sorted_importances})
-            plt.figure(figsize=(12, 8))
-            sns.barplot(
-                x='Importance',
-                y='Feature',
-                data=importances_df,
-                palette='viridis'
-            )
-            plt.title(f'{name} - Importância das Características')
-            plt.xlabel('Importância')
-            plt.ylabel('Características')
-            plt.grid(True)
-            plt.savefig(r'C:\Users\luiga\Documents\python-final-project\car_regressor\img_train\{}{}_importancia_atributos.png'.format(model_id,name.replace(" ", "_")))
+            importance_chart = pygal.HorizontalBar(style=Style(colors=['#33FF57', '#FF5733']))
+            importance_chart.title = f'{name} - Importância das Características'
+            for i in range(len(sorted_importances)):
+                importance_chart.add(sorted_feature_names[i], sorted_importances[i])
+            importance_chart.render_to_file(f'./car_regressor/img_train/{model_id}_{name.replace(" ", "_")}/{model_id}_{name.replace(" ", "_")}_importancia_atributos.svg')
         '''
             Incrementar o ID para o próximo modelo
         '''
@@ -123,6 +115,48 @@ def train_test(data,
         Salvar os resultados em um arquivo CSV
     '''
     results_df = pd.DataFrame(results)
-    results_df.to_csv(r'C:\Users\luiga\Documents\python-final-project\car_regressor\metrics\metrics.csv', index=False)
+    results_df.to_csv('./car_regressor/metrics/metrics.csv', index=False)
 
     return results
+
+def DA_function(data):
+    output_path = './car_regressor/img_analysis'
+    df = pd.DataFrame(data)
+    '''
+      Gráfico de linha: Dimensão=ano, Medida=AVG(preco_venda), AVG(preco_atual)
+    '''
+    avg_prices_by_year = df.groupby('ano')[['preco_venda', 'preco_atual']].mean()
+    line_chart = pygal.Line(style=Style(colors=['#FF5733', '#33FF57']))
+    line_chart.title = 'Média de Preço por Ano'
+    line_chart.x_labels = avg_prices_by_year.index.astype(str)
+    line_chart.add('Preço de Venda Médio', avg_prices_by_year['preco_venda'].tolist())
+    line_chart.add('Preço Atual Médio', avg_prices_by_year['preco_atual'].tolist())
+    line_chart.render_to_file(os.path.join(output_path, 'media_preco_por_ano.svg'))
+    '''
+      Gráfico de barra: Dimensão=tipo_combustivel, Medida=COUNT(tipo_combustivel)
+    '''
+    fuel_type_counts = df['tipo_combustivel'].value_counts()
+    bar_chart_fuel = pygal.Bar(style=Style(colors=['#33FF57', '#FF5733']))
+    bar_chart_fuel.title = 'Quantidade por Tipo de Combustível'
+    for fuel_type, count in fuel_type_counts.items():
+        bar_chart_fuel.add(fuel_type, count)
+    bar_chart_fuel.render_to_file(os.path.join(output_path, 'quantidade_tipo_combustivel.svg'))
+    '''
+      Gráfico de barra: Dimensão=tipo_transmissao, Medida=COUNT(tipo_transmissao)
+    '''
+    transmission_type_counts = df['tipo_transmissao'].value_counts()
+    bar_chart_transmission = pygal.Bar(style=Style(colors=['#33FF57', '#FF5733']))
+    bar_chart_transmission.title = 'Quantidade por Tipo de Transmissão'
+    for transmission_type, count in transmission_type_counts.items():
+        bar_chart_transmission.add(transmission_type, count)
+    bar_chart_transmission.render_to_file(os.path.join(output_path, 'quantidade_tipo_transmissao.svg'))
+    '''
+      KPI: Quantidade de carros
+    '''
+    total_cars = len(df)
+    kpi_chart = pygal.SolidGauge(inner_radius=0.7, style=Style(colors=['#FF5733']))
+    kpi_chart.title = 'Total de Carros no Dataset'
+    kpi_chart.add('Total', [{'value': total_cars, 'max_value': total_cars}])
+    kpi_chart.render_to_file(os.path.join(output_path, 'total_carros_kpi.svg'))
+    
+    print(f'Gráficos criados e salvos em: {output_path}')
