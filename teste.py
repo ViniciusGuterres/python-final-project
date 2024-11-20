@@ -1,5 +1,5 @@
 import pandas as pd
-from prevision import train_test
+from prevision import ML_function, DA_function
 
 file_path = 'C:/Users/luiga/Documents/python-final-project/car_regressor/data/car_data.csv'
 
@@ -46,7 +46,8 @@ try:
         'loss': ['squared_error']  # Função de perda: ['squared_error', 'absolute_error', 'huber', 'quantile'].
     }
 
-    sucesso = train_test(data, params_Ridge, params_Lasso, params_DecisionTree, params_RandomForest, params_GradientBoosting)
+    sucesso = ML_function(data, params_Ridge, params_Lasso, params_DecisionTree, params_RandomForest, params_GradientBoosting)
+    DA_function(data)
     
     if sucesso:
         print("Treinamento dos modelos realizado com sucesso!")
