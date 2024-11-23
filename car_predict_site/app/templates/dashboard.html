@@ -3,5 +3,45 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2>Dashboard</h2>
+{% load static %}
+
+<div class="container-xxl mt-4">
+    <h1>Gráficos de Analise de Dados</h1>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h3>Gráfico de Média de Preço por Ano</h3>
+                <object data="{% static 'img_analysis/media_preco_por_ano.svg' %}" type="image/svg+xml"
+                    class="img-fluid"></object>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h3>Gráfico de Quantidade Tipo de Combustível</h3>
+                <object data="{% static 'img_analysis/quantidade_tipo_combustivel.svg' %}" type="image/svg+xml"
+                    class="img-fluid"></object>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h3>Gráfico de Quantidade Tipo de Transmissão</h3>
+                <object data="{% static 'img_analysis/quantidade_tipo_transmissao.svg' %}" type="image/svg+xml"
+                    class="img-fluid"></object>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h3>KPI Total de Carros</h3>
+                <object data="{% static 'img_analysis/total_carros_kpi.svg' %}" type="image/svg+xml"
+                    class="img-fluid"></object>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

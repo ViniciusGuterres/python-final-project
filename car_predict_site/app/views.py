@@ -1,9 +1,11 @@
 import os
 import csv
+import pandas as pd
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from .forms import UploadCSVForm, MLParameterForm
+from prevision.prevision import ML_function, DA_function
 
 def index(request):
     if request.method == 'POST':
@@ -41,18 +43,23 @@ def index(request):
     return render(request, 'index.html', {'form': form})
 
 def dashboard(request):
-    print('dashboard')
+    try:
+        file_path = './media/uploads/car_data.csv'
+        data = pd.read_csv(file_path, sep=',', encoding='utf-8')
+    except FileNotFoundError:
+       return redirect('index') 
+    
+    DA_function(data)
+    
     return render(request, 'dashboard.html')
 
 def configure_parameters(request):
     parameter_form = MLParameterForm()
 
-    if request.method == 'POST':  # Handle parameter submission
+    if request.method == 'POST': 
         parameter_form = MLParameterForm(request.POST)
         if parameter_form.is_valid():
             parameters = parameter_form.cleaned_data
-            # Process parameters (e.g., save for analysis or redirect)
-            return redirect('dashboard')  # Redirect to the dashboard or another page
+            return redirect('dashboard') 
 
-    # Always render the form if it's not a POST request or if the form is invalid
     return render(request, 'configure_parameters.html', {'parameter_form': parameter_form})
