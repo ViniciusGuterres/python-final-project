@@ -32,7 +32,7 @@ def ML_function(data,
     y = df['pct_preco_venda'] 
     x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size=0.2, random_state=42)
     '''
-        Preparação dos modelos com os seus parâmetros
+        Preparação dos modelos com os parâmetros
     '''
     models = {
         "Ridge Regression": (Ridge(), params_Ridge),
