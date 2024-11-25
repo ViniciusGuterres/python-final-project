@@ -21,3 +21,30 @@ class MLParameterForm(forms.Form):
     lasso_selection = forms.ChoiceField(label="Lasso Selection", choices=[
         ('cyclic', 'Cyclic'), ('random', 'Random')
     ], initial='cyclic')
+
+
+class CarPredictionForm(forms.Form):
+    MODELO_CHOICES = [
+        ('1_Ridge_Regression', 'Ridge'),
+        ('2_Lasso_Regression', 'Lasso'),
+        ('3_Decision_Tree_Regressor', 'Decision Tree'),
+        ('4_Random_Forest_Regressor', 'Random Forest'),
+        ('5_Gradient_Boosting_Regressor', 'Gradient Boosting'),
+    ]
+    modelo = forms.ChoiceField(choices=MODELO_CHOICES, label="Escolha o modelo")
+    ano = forms.IntegerField(label="Ano do carro", min_value=1900, max_value=2024)
+    preco_atual = forms.FloatField(label="Preço atual do carro", min_value=0)
+    kms_rodados = forms.IntegerField(label="Quilômetros rodados", min_value=0)
+    n_donos = forms.IntegerField(label="Número de donos anteriores", min_value=0)
+    tipo_transmissao_manual = forms.BooleanField(
+        label="Transmissão manual", required=False
+    )
+    tipo_vendedor_revendedor = forms.BooleanField(
+        label="Vendedor revendedor", required=False
+    )
+    combustivel_gas_natural = forms.BooleanField(
+        label="Combustível gás natural", required=False
+    )
+    combustivel_gasolina = forms.BooleanField(
+        label="Combustível gasolina", required=False
+    )

@@ -4,8 +4,9 @@ import pandas as pd
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from .forms import UploadCSVForm, MLParameterForm
+from .forms import UploadCSVForm, MLParameterForm, CarPredictionForm
 from prevision.prevision import ML_function, DA_function
+import joblib
 
 def index(request):
     if request.method == 'POST':
@@ -41,6 +42,47 @@ def index(request):
         form = UploadCSVForm()
 
     return render(request, 'index.html', {'form': form})
+
+def car_prediction(request):
+    resultado = None
+    if request.method == "POST":
+        form = CarPredictionForm(request.POST)
+        if form.is_valid():
+
+            modelo_escolhido = form.cleaned_data['modelo']
+            ano = form.cleaned_data['ano']
+            preco_atual = form.cleaned_data['preco_atual']
+            kms_rodados = form.cleaned_data['kms_rodados']
+            n_donos = form.cleaned_data['n_donos']
+            tipo_transmissao_manual = int(form.cleaned_data['tipo_transmissao_manual'])
+            tipo_vendedor_revendedor = int(form.cleaned_data['tipo_vendedor_revendedor'])
+            combustivel_gas_natural = int(form.cleaned_data['combustivel_gas_natural'])
+            combustivel_gasolina = int(form.cleaned_data['combustivel_gasolina'])
+
+            model_path = f"prevision/model/{modelo_escolhido}.pkl"
+            modelo = joblib.load(model_path)
+
+            dados = pd.DataFrame({
+                'ano': [ano],
+                'kms_rodados': [kms_rodados],
+                'n_donos': [n_donos],
+                'tipo_transmissao_Manual': [tipo_transmissao_manual],
+                'tipo_vendedor_Revendedor': [tipo_vendedor_revendedor],
+                'tipo_combustivel_GasNatural': [combustivel_gas_natural],
+                'tipo_combustivel_Gasolina': [combustivel_gasolina]
+            })
+
+            pct_preco_venda = modelo.predict(dados)[0]
+            preco_venda = preco_atual * (1 + pct_preco_venda / 100)
+
+            resultado = {
+                'pct_preco_venda': pct_preco_venda,
+                'preco_venda': preco_venda,
+            }
+    else:
+        form = CarPredictionForm()
+
+    return render(request, 'car_prediction.html', {'form': form, 'resultado': resultado})
 
 def dashboard(request):
     try:
