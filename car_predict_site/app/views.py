@@ -142,7 +142,7 @@ def configure_parameters(request):
                     'loss': ['squared_error'],
                 }
 
-                sucesso = ML_function(
+                ML_function(
                     data,
                     params_Ridge,
                     params_Lasso,
@@ -151,10 +151,7 @@ def configure_parameters(request):
                     params_GradientBoosting
                 )
 
-                if sucesso:
-                    return redirect('dashboard')
-                else:
-                    return redirect('dashboard')
+                return redirect('dashboard')
 
             except Exception as e:
                 return redirect('dashboard')
