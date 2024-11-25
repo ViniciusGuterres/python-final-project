@@ -29,7 +29,7 @@ def ML_function(data,
         Divisão dos atributos de treinamento e teste
     '''
     x = df[['ano', 'kms_rodados', 'n_donos', 'tipo_transmissao_Manual', 'tipo_vendedor_Revendedor', 'tipo_combustivel_GasNatural', 'tipo_combustivel_Gasolina']]
-    y = df['pct_preco_venda']  # Mudança para Series 1D
+    y = df['pct_preco_venda'] 
     x_treino, x_teste, y_treino, y_teste = train_test_split(x, y, test_size=0.2, random_state=42)
     '''
         Preparação dos modelos com os seus parâmetros
@@ -67,7 +67,7 @@ def ML_function(data,
             Avaliação do modelo
         '''
         y_pred = best_model_found.predict(x_teste)
-        y_pred_series = pd.Series(y_pred)  # Garantir que y_pred seja uma Series
+        y_pred_series = pd.Series(y_pred) 
         r2 = r2_score(y_teste, y_pred_series)
         mae = mean_absolute_error(y_teste, y_pred_series)
         mse = mean_squared_error(y_teste, y_pred_series)
