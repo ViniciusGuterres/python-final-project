@@ -6,7 +6,8 @@
 {% load static %}
 
 <div class="container-xxl mt-4">
-    <div class="d-flex justify-content-end mb-4">
+    <div class="d-flex justify-content-between mb-4 gap-3">
+        <a href="{% url 'index' %}" class="btn btn-primary">Voltar</a>
         <a href="{% url 'car_prediction' %}" class="btn btn-primary">Ir para Previsão de Carros</a>
     </div>
     <h1>Gráficos de Analise de Dados</h1>
