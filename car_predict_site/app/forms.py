@@ -5,8 +5,12 @@ class UploadCSVForm(forms.Form):
 
 class MLParameterForm(forms.Form):
     # Ridge Parameters
-    ridge_alpha = forms.FloatField(label="Ridge Alpha", initial=1.0)
-    ridge_fit_intercept = forms.BooleanField(label="Ridge Fit Intercept", initial=True, required=False)
+    ridge_alpha = forms.FloatField(label='Ridge Alpha', required=True)
+    ridge_fit_intercept = forms.BooleanField(label='Ridge Fit Intercept', required=False, initial=True)
+    decision_tree_max_depth = forms.IntegerField(label='Decision Tree Max Depth', required=False, initial=None)
+    
+    decision_tree_min_samples_split = forms.IntegerField(label='Decision Tree Min Samples Split', required=True, initial=2)
+
     ridge_solver = forms.ChoiceField(label="Ridge Solver", choices=[
         ('auto', 'Auto'), ('svd', 'SVD'), ('cholesky', 'Cholesky'), ('saga', 'SAGA'), ('lsqr', 'LSQR')
     ], initial='auto')

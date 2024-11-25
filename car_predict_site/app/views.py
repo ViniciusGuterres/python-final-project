@@ -56,10 +56,66 @@ def dashboard(request):
 def configure_parameters(request):
     parameter_form = MLParameterForm()
 
-    if request.method == 'POST': 
+    if request.method == 'POST':
         parameter_form = MLParameterForm(request.POST)
         if parameter_form.is_valid():
-            parameters = parameter_form.cleaned_data
-            return redirect('dashboard') 
+            try:
+                data = pd.read_csv('./media/uploads/car_data.csv', sep=',', encoding='utf-8')
+
+                params = parameter_form.cleaned_data
+
+                params_Ridge = {
+                    'alpha': [params['ridge_alpha']],
+                    'fit_intercept': [params['ridge_fit_intercept']],
+                    'solver': ['auto'],
+                }
+                params_Lasso = {
+                    'alpha': [params['lasso_alpha']],
+                    'fit_intercept': [params['lasso_fit_intercept']],
+                    'selection': ['cyclic'],
+                }
+                params_DecisionTree = {
+                    'criterion': ['squared_error'],
+                    'max_depth': [params['decision_tree_max_depth']],
+                    'min_samples_split': [params['decision_tree_min_samples_split']],
+                    'min_samples_leaf': [params['decision_tree_min_samples_leaf']],
+                    'max_features': [params['decision_tree_max_features']],
+                }
+                params_RandomForest = {
+                    'n_estimators': [params['random_forest_n_estimators']],
+                    'criterion': ['squared_error'],
+                    'max_depth': [params['random_forest_max_depth']],
+                    'min_samples_split': [params['random_forest_min_samples_split']],
+                    'min_samples_leaf': [params['random_forest_min_samples_leaf']],
+                    'max_features': ['sqrt'],
+                    'bootstrap': [True],
+                }
+                params_GradientBoosting = {
+                    'n_estimators': [params['gradient_boosting_n_estimators']],
+                    'learning_rate': [params['gradient_boosting_learning_rate']],
+                    'max_depth': [params['gradient_boosting_max_depth']],
+                    'min_samples_split': [params['gradient_boosting_min_samples_split']],
+                    'min_samples_leaf': [params['gradient_boosting_min_samples_leaf']],
+                    'subsample': [1.0],
+                    'loss': ['squared_error'],
+                }
+
+                sucesso = ML_function(
+                    data,
+                    params_Ridge,
+                    params_Lasso,
+                    params_DecisionTree,
+                    params_RandomForest,
+                    params_GradientBoosting
+                )
+
+                if sucesso:
+                    return redirect('dashboard')
+                else:
+                    return redirect('dashboard')
+
+            except Exception as e:
+                return redirect('dashboard')
+
 
     return render(request, 'configure_parameters.html', {'parameter_form': parameter_form})
